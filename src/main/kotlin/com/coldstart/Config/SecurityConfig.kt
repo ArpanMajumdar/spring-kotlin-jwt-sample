@@ -25,7 +25,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 csrf().
                 disable()
                 .antMatcher("/**").authorizeRequests()
-                .antMatchers("/user/*").permitAll()
+                .antMatchers("/user/*", "/browser/**").permitAll()
                 .anyRequest().authenticated()
                 .antMatchers("/metrics").hasAuthority("ADMIN")
                 .and()
