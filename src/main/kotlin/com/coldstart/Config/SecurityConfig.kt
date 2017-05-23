@@ -22,16 +22,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.
-                csrf().
-                disable()
+                csrf()
+                    .disable()
                 .antMatcher("/**").authorizeRequests()
-                .antMatchers("/user/*", "/browser/**").permitAll()
-                .anyRequest().authenticated()
-                .antMatchers("/metrics").hasAuthority("ADMIN")
+                    .antMatchers("/user/*", "/browser/**").permitAll()
+                    .anyRequest().authenticated()
+                    .antMatchers("/metrics").hasAuthority("ADMIN")
                 .and()
-                .addFilterBefore(JWTLoginFilter("/user/login", authenticationManager()),
+                    .addFilterBefore(JWTLoginFilter("/user/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter::class.java)
-                .addFilterBefore(JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .addFilterBefore(JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 }
