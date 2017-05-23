@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.PersistenceConstructor
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document
  */
 
 @Document
-data class User @PersistenceConstructor constructor(val username: String, @JsonIgnore val password: String, @Id val id: ObjectId? = null) {
-    val roles: MutableList<String> = mutableListOf("guest")
-}
+data class User @PersistenceConstructor constructor(@Indexed(unique = true) val username: String,
+                                                    @JsonIgnore val password: String,
+                                                    val roles: MutableList<String> = mutableListOf("GUEST"),
+                                                    @Id val id: ObjectId? = null)

@@ -15,10 +15,9 @@ class Loader @Autowired
 constructor(private val userRepo: UserRepo) : CommandLineRunner {
     override fun run(vararg args: String) {
         userRepo.deleteAll()
-        val admin = User(username = "admin", password = "admin")
-        admin.roles.add("123")
+        val admin = User(username = "admin", password = "admin", roles = mutableListOf("ADMIN", "MOD"))
         userRepo.save(admin)
         userRepo.save(User("quang", "1"))
-        userRepo.save(User("test", "1"))
+        userRepo.save(User("test", "123"))
     }
 }

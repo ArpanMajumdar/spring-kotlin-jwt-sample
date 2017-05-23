@@ -25,18 +25,18 @@ internal object JWTUtils {
 
     private val logger = Logger.getLogger(JWTUtils::class.java)
 
-    fun createJwt(user: User): String {
+    fun User.createJwt(): String {
         val claims = HashMap<String, Any>()
-        claims.put("roles", user.roles)
+        claims.put("roles", this.roles)
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.username)
+                .setSubject(this.username)
                 .setExpiration(Date(Date().time + TimeUnit.HOURS.toMillis(expiration)))
                 .signWith(SignatureAlgorithm.HS256, secret).compact()
     }
 
     fun addAuthentication(response: HttpServletResponse, user: User) {
-        val jwt = createJwt(user)
+        val jwt = user.createJwt()
         response.writer.write(jwt)
         response.writer.flush()
         response.writer.close()
@@ -44,24 +44,19 @@ internal object JWTUtils {
 
     fun getAuthentication(request: HttpServletRequest): Authentication? {
         val token = request.getHeader(header) ?: return null
-        val username = Jwts.parser()
+
+        val tokenBody = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .body
-                .subject
+
+        val username: String = tokenBody.subject
         @Suppress("UNCHECKED_CAST")
-        val roles = Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .body["roles"] as List<String>
+        val roles = tokenBody["roles"] as List<String>
 
         val res = roles.mapTo(LinkedList<GrantedAuthority>()) { SimpleGrantedAuthority(it) }
 
-        logger.info(res)
-
-        return if (username == null)
-            null
-        else
-            UsernamePasswordAuthenticationToken(username, null, res)
+        logger.info(username + " logged in with authorities " + res)
+        return UsernamePasswordAuthenticationToken(username, null, res)
     }
 }
