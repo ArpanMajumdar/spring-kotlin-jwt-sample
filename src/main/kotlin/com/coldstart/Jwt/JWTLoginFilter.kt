@@ -1,7 +1,8 @@
 package com.coldstart.Jwt
 
 import com.coldstart.Service.SecurityUserDetails
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -26,8 +27,7 @@ class JWTLoginFilter internal constructor(s: String, authenticationManager: Auth
     @Throws(AuthenticationException::class, IOException::class, ServletException::class)
     override fun attemptAuthentication(
             req: HttpServletRequest, res: HttpServletResponse): Authentication {
-        val cred: AccountCredentials? = ObjectMapper()
-                .readValue(req.inputStream, AccountCredentials::class.java)
+        val cred: AccountCredentials? = jacksonObjectMapper().readValue(req.inputStream)
 
         return authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken(
