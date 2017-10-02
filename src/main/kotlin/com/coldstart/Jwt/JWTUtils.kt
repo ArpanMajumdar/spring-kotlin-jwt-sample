@@ -37,6 +37,7 @@ internal object JWTUtils {
 
     fun addAuthentication(response: HttpServletResponse, user: User) {
         val jwt = user.createJwt()
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000")
         response.writer.write(jwt)
         response.writer.flush()
         response.writer.close()
